@@ -1,49 +1,25 @@
 const User = require('../models/user.model');
 
-//MAXIMUM 100 USERS TO LOG IN
-let tokens = [];
-exports.test = function(req,res){
-    res.send("working with user");
-};
-
-exports.test_data = function(req,res){
-  let user = req.body.username;
-  let pass = req.body.password;
-
-  res.send(username + " // "+ password);
-}
-
 exports.login = function(req,res){
-    let username = req.params.user;
-    let password = req.params.pass;
+    let Username = req.body.username;
+    let Password = req.body.password;
 
-    let query = {username:username};
-    User.findOne(query,function(err,user){
-        if(err)return next(err);
+    User.findOne({username : Username , password : Password},function(err,user){
+        if(err){
+            console.log(err);
+            return res.status(500).send();
+        }
+
         if(!user){
-            throw "No user found";
+            console.log("User not found!");
+            return res.status(404).send();
         }
-
-        if( user.password == password ){
-            generatedToken = generateToken();
-            res.send(generatedToken);
-        }
-
+        console.log("worked!");
+        return res.status(202).send();
     })
 };
 
-function generateToken(){
-  let randomToken = Math.random();
-  for (let i = 0; i < tokens.length; i++) {
-    if(tokens[i] == randomToken){
-      randomToken=Math.random();
-      i=0;
-    }
-    return randomToken;
-  }
-}
-
-exports.signUp = function(req,res){
+exports.create = function(req,res){
     let user = new User(
         {
             username: req.body.username,
@@ -53,8 +29,20 @@ exports.signUp = function(req,res){
 
     user.save(function(err){
         if(err){
+            console.log(err);
             return err;
         }
-        res.send('User registered')
+        res.send('User created succesfully!')
     })
 };
+
+exports.test_data = function(req,res){
+    
+  //console.log("Macar intru in functiie");  
+  let user = req.body.username;
+  let pass = req.body.password;
+
+  res.send(user + " // "+ pass);
+}
+
+
